@@ -1,22 +1,19 @@
 
-import instruments.Util.CookieUtil;
-import java.io.IOException;
-import java.io.PrintWriter;
+import instruments.Util.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 @WebServlet("/main_page")
 public class FormHandler extends HttpServlet {
@@ -39,7 +36,6 @@ public class FormHandler extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         String[] all_langs = {"Pascal","C","C++","JavaScript","PHP","Python","Java","Haskell","Clojure","Prolog","Scala","Go"};
-        CookieUtil cu = new CookieUtil();
         boolean correctInfo = true;
         ArrayList<String> errors = new ArrayList<>();
         
@@ -76,44 +72,17 @@ public class FormHandler extends HttpServlet {
             errors.add("dob");
         }
         
-        
         if(correctInfo){
-            try{
-            String url = "jdbc:mariadb://localhost:3306/users_info";
-            String login = "root";
-            String password = "omegalul";
-            Class.forName("org.mariadb.jdbc.Driver");
-            try (Connection conn = DriverManager.getConnection(url,login,password)){
+            try (Connection conn = DButil.getConnection()){
                     writer.println("All good");
-                    PreparedStatement stmt = conn.prepareStatement("INSERT INTO users(fio,phone,email,dob,gender,bio) VALUES(?,?,?,?,?,?)");
-                    stmt.setString(1, fio);
-                    stmt.setString(2, phone);
-                    stmt.setString(3, email);
-                    stmt.setDate(4,Date.valueOf(dob));
-                    stmt.setString(5, gender);
-                    stmt.setString(6, bio);
-                    stmt.executeUpdate();
-                    PreparedStatement stmt2 = conn.prepareStatement("INSERT INTO fav_langs(user_id,lang_id)\n" +
-                                                                    "SELECT u.id, l.id FROM\n" +
-                                                                    "users u JOIN langs l ON l.name=?\n" +
-                                                                    "WHERE u.fio=?");
-                    if(languages!=null)
-                    for(String lang: languages){
-                        stmt2.setString(1,lang);
-                        stmt2.setString(2,fio);
-                        stmt2.executeUpdate();
-                    }
+                    DButil.insertUser(conn,fio,phone,email,dob,gender,bio);
+                    DButil.insertFavLangs(conn,fio,languages);
                 }
             catch(Exception ex){
                 writer.println("Connection failed...");
                 writer.println(ex);
             }
-            }
-            catch(Exception ex){
-                writer.println("Driver problems");
-                writer.println(ex);
-            }
-
+            
             addCook("fio",fio,365*24*60*60,response);
             addCook("phone",phone,365*24*60*60,response);
             addCook("email",email,365*24*60*60,response);
@@ -124,7 +93,7 @@ public class FormHandler extends HttpServlet {
             Cookie[] allCook = request.getCookies();
             if(all_langs!=null)
                 for(String i: all_langs)
-                    cu.delCook(allCook, i, response);
+                    CookieUtil.delCook(allCook, i, response);
             if(languages!=null)
                 for(String lang: languages){
                     addCook(lang,lang,365*24*60*60,response);

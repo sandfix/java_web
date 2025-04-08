@@ -6,14 +6,13 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
+import service.UserAccount;
 
 @WebServlet("/main_page")
 public class FormHandler extends HttpServlet {
@@ -73,16 +72,15 @@ public class FormHandler extends HttpServlet {
         }
         
         if(correctInfo){
-            try (Connection conn = DButil.getConnection()){
-                    writer.println("All good");
-                    DButil.insertUser(conn,fio,phone,email,dob,gender,bio);
-                    DButil.insertFavLangs(conn,fio,languages);
-                }
-            catch(Exception ex){
-                writer.println("Connection failed...");
-                writer.println(ex);
-            }
-            
+//            try (Connection conn = DButil.getConnection()){
+//                    writer.println("All good");
+//                    DButil.insertUser(conn,fio,phone,email,dob,gender,bio);
+//                    DButil.insertFavLangs(conn,fio,languages);
+//                }
+//            catch(Exception ex){
+//                writer.println("Connection failed...");
+//                writer.println(ex);
+//            }
             addCook("fio",fio,365*24*60*60,response);
             addCook("phone",phone,365*24*60*60,response);
             addCook("email",email,365*24*60*60,response);
@@ -98,6 +96,14 @@ public class FormHandler extends HttpServlet {
                 for(String lang: languages){
                     addCook(lang,lang,365*24*60*60,response);
                 }
+            HttpSession session = request.getSession();
+            UserAccount user = new UserAccount();
+            
+            session.setAttribute("user", user);
+            
+            writer.println(user.getLogin());
+            writer.println(user.getPassword());
+            
             writer.close();
         }
         else{

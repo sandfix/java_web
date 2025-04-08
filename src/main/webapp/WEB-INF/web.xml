@@ -4,9 +4,17 @@
         <servlet-name>FormHandler</servlet-name>
         <servlet-class>FormHandler</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>Login</servlet-name>
+        <servlet-class>Login</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>FormHandler</servlet-name>
         <url-pattern>/main_page</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Login</servlet-name>
+        <url-pattern>/Login</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

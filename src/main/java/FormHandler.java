@@ -12,7 +12,6 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import service.UserAccount;
 
 @WebServlet("/main_page")
 public class FormHandler extends HttpServlet {
@@ -96,13 +95,6 @@ public class FormHandler extends HttpServlet {
                 for(String lang: languages){
                     addCook(lang,lang,365*24*60*60,response);
                 }
-            HttpSession session = request.getSession();
-            UserAccount user = new UserAccount();
-            
-            session.setAttribute("user", user);
-            
-            writer.println(user.getLogin());
-            writer.println(user.getPassword());
             
             writer.close();
         }

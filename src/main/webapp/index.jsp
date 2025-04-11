@@ -37,6 +37,14 @@
 </head>
 <body>
     <div class="main">
+        <div class="login_form_div">
+            <form class="login_form" action="login" method="post">
+                <span style="text-align: center; font-size: medium; padding-bottom: 5px; font-weight: bold;">Авторизация</span>
+                    <input type="text" name="login" placeholder="логин">
+                    <input type="text" name="password" placeholder="пароль">
+                <button type="submit">Войти</button>
+            </form>
+        </div>
         <div class="center_elem">
             <h1 style="text-align: center;">Форма регистрации</h1>
             <form class="main_form" action="main_page" method="post">

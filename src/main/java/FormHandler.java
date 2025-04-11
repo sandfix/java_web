@@ -1,4 +1,5 @@
 
+import authorization.User;
 import instruments.Util.*;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletContext;
@@ -8,6 +9,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -78,6 +80,13 @@ public class FormHandler extends HttpServlet {
             CookieUtil.addCook("gender",gender,365*24*60*60,response);
             CookieUtil.addCook("bio",bio,365*24*60*60,response);
             CookieUtil.addCook("langs",langs,365*24*60*60,response);
+            
+            User user = new User();
+            writer.println(user.getLogin());
+            writer.println(user.getPassword());
+            HttpSession session = request.getSession();
+            session.setAttribute("user", user);
+            
             writer.close();
         }
         else{
@@ -91,11 +100,6 @@ public class FormHandler extends HttpServlet {
             CookieUtil.addCook("errors",errors,-1,response);
             
             String responseLink = "/web_proj/index.jsp";
-//            request.setAttribute("errors", errors);
-//            request.setAttribute("delcook", "true");
-//            ServletContext sc = getServletContext();
-//            RequestDispatcher rd = sc.getRequestDispatcher(responseLink);
-//            rd.forward(request, response);
             response.sendRedirect(responseLink);
         }
 

@@ -1,76 +1,66 @@
 
 import instruments.Util.*;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import service.UserAccount;
 
 @WebServlet("/main_page")
 public class FormHandler extends HttpServlet {
-    
-    private void addCook(String name, String val, int time, HttpServletResponse response)
-    {
-        if(val==null)
-            return;
-        try{
-        Cookie cook = new Cookie(name,URLEncoder.encode(val, "UTF-8"));
-        cook.setMaxAge(time);
-        response.addCookie(cook);
-        }
-        catch (UnsupportedEncodingException e) 
-        {
-            e.printStackTrace();
-        }
-    }
-    
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String[] all_langs = {"Pascal","C","C++","JavaScript","PHP","Python","Java","Haskell","Clojure","Prolog","Scala","Go"};
         boolean correctInfo = true;
-        ArrayList<String> errors = new ArrayList<>();
-        
+        String errors = "";
+
         response.setContentType("text/html");
         PrintWriter writer = response.getWriter();
-        
+
         String fio = request.getParameter("fio");
         String phone = request.getParameter("phone");
         String email = request.getParameter("email");
         String dob = request.getParameter("dob");
         String gender = request.getParameter("gender");
         String bio = request.getParameter("biography");
-        String languages[] = request.getParameterValues("languages"); 
-        
-        
+        String languages[] = request.getParameterValues("languages");
+
+        String langs = "";
+            if(languages!=null)
+            for(String i: languages)
+            {
+                langs+=i+"-";
+            }
+        langs = langs.substring(0,langs.length()-1);
+
         if(!fio.matches("[a-zA-Z ]{0,150}"))
         {
             correctInfo=false;
-            errors.add("fio");
+            errors+="0-";
         }
         if(!phone.matches("[0-9+]{1}[0-9- ]{0,20}"))
         {
             correctInfo=false;
-            errors.add("phone");
+            errors+="1-";
         }
         if(!email.matches("^\\S+@\\S+$"))
         {
             correctInfo=false;
-            errors.add("email");
+            errors+="2-";
         }
         if(!dob.matches("^\\d{4}-\\d\\d-\\d\\d$"))
         {
             correctInfo=false;
-            errors.add("dob");
+            errors+="3-";
         }
-        
+
         if(correctInfo){
 //            try (Connection conn = DButil.getConnection()){
 //                    writer.println("All good");
@@ -81,50 +71,33 @@ public class FormHandler extends HttpServlet {
 //                writer.println("Connection failed...");
 //                writer.println(ex);
 //            }
-            addCook("fio",fio,365*24*60*60,response);
-            addCook("phone",phone,365*24*60*60,response);
-            addCook("email",email,365*24*60*60,response);
-            addCook("dob",dob,365*24*60*60,response);
-            addCook("gender",gender,365*24*60*60,response);
-            addCook("bio",bio,365*24*60*60,response);
-            
-            Cookie[] allCook = request.getCookies();
-            if(all_langs!=null)
-                for(String i: all_langs)
-                    CookieUtil.delCook(allCook, i, response);
-            if(languages!=null)
-                for(String lang: languages){
-                    addCook(lang,lang,365*24*60*60,response);
-                }
-            HttpSession session = request.getSession();
-            UserAccount user = new UserAccount();
-            
-            session.setAttribute("user", user);
-            
-            writer.println(user.getLogin());
-            writer.println(user.getPassword());
-            
+            CookieUtil.addCook("fio",fio,365*24*60*60,response);
+            CookieUtil.addCook("phone",phone,365*24*60*60,response);
+            CookieUtil.addCook("email",email,365*24*60*60,response);
+            CookieUtil.addCook("dob",dob,365*24*60*60,response);
+            CookieUtil.addCook("gender",gender,365*24*60*60,response);
+            CookieUtil.addCook("bio",bio,365*24*60*60,response);
+            CookieUtil.addCook("langs",langs,365*24*60*60,response);
             writer.close();
         }
         else{
-            addCook("fio",fio,-1,response);
-            addCook("phone",phone,-1,response);
-            addCook("email",email,-1,response);
-            addCook("dob",dob,-1,response);
-            addCook("gender",gender,-1,response);
-            addCook("bio",bio,-1,response);
-            if(languages!=null)
-                for(String lang: languages){
-                    addCook(lang,lang,-1,response);
-                }
-            String responseLink = "index.jsp?status=error";
-            if(errors.size()!=0)
-                for(String i: errors)
-                {
-                    responseLink+="&"+i+"=true";
-                }
+            CookieUtil.addCook("fio",fio,-1,response);
+            CookieUtil.addCook("phone",phone,-1,response);
+            CookieUtil.addCook("email",email,-1,response);
+            CookieUtil.addCook("dob",dob,-1,response);
+            CookieUtil.addCook("gender",gender,-1,response);
+            CookieUtil.addCook("bio",bio,-1,response);
+            CookieUtil.addCook("langs",langs,-1,response);
+            CookieUtil.addCook("errors",errors,-1,response);
+            
+            String responseLink = "/web_proj/index.jsp";
+//            request.setAttribute("errors", errors);
+//            request.setAttribute("delcook", "true");
+//            ServletContext sc = getServletContext();
+//            RequestDispatcher rd = sc.getRequestDispatcher(responseLink);
+//            rd.forward(request, response);
             response.sendRedirect(responseLink);
         }
-        
+
     }
 }

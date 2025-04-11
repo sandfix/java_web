@@ -3,11 +3,14 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class Util {
@@ -15,7 +18,7 @@ public class Util {
     
     //класс для работы с куки
     public static class CookieUtil{
-        public static String contains(Cookie mas[], String name)
+        public static String getVal(Cookie mas[], String name)
         {   
             String ret = "";
             
@@ -48,20 +51,45 @@ public class Util {
                 {
                     k.setValue("");
                     k.setMaxAge(0);
+                    k.setPath("/");
                     response.addCookie(k);
                     break;
                 }
             }
         }
         
-        
-//        public void lsCook(Cookie mas[]){
-//           if(mas != null)
-//           for(Cookie k: mas)
-//           {
-//                logger.info(k.getName() + " Existed cookie");
-//            } 
+        public static void addCook(String name, String val, int time, HttpServletResponse response){
+            if(val==null)
+                return;
+            try{
+                Cookie cook = new Cookie(name,URLEncoder.encode(val, "UTF-8"));
+                cook.setMaxAge(time);
+                cook.setPath("/");
+                response.addCookie(cook);
+            }
+            catch (UnsupportedEncodingException e) 
+            {
+                e.printStackTrace();
+            }
+        }
+        //overload for String[]
+//        public static void addCook(String name, String[] mas, int time, HttpServletResponse response){
+//            if(mas==null)
+//                return;
+//            for(String val : mas){
+//                try
+//                {
+//                    Cookie cook = new Cookie(name,URLEncoder.encode(val, "UTF-8"));
+//                    cook.setMaxAge(time);
+//                    response.addCookie(cook);
+//                }
+//                catch (UnsupportedEncodingException e) 
+//                {
+//                    e.printStackTrace();
+//                }
+//            }
 //        }
+        
     }
     //класс с подготовленными sql запросами и подключением к бд
     public static class DButil{

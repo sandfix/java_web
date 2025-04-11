@@ -3,29 +3,29 @@
 <%@page import="instruments.Util.CookieUtil"%>
 <%
     Cookie[] cookies = request.getCookies();
-    boolean[] errors;
-    if(request.getAttribute("errors")!=null)
-        errors = (boolean[])request.getAttribute("errors");
+    boolean[] errors = new boolean[4];
     String[] langs = {"Pascal","C","C++","JavaScript","PHP","Python","Java","Haskell","Clojure","Prolog","Scala","Go"};
     String[] check = new String[langs.length];
     String langs_cook = CookieUtil.getVal(cookies,"langs");
+    String errors_cook = CookieUtil.getVal(cookies,"errors");
+    
     for(char i : langs_cook.toCharArray())
     {
         if(i!='-')
             check[Character.getNumericValue(i)] = "selected";
     }
+    
+    for(char i : errors_cook.toCharArray())
+    {
+        if(i!='-')
+            errors[Character.getNumericValue(i)] = true;
+    }
+    
+    for(boolean b : errors)
+        System.out.println(b);
 %>
 <%!
-//String returnOnContain(Cookie[] cookies, String name, String out)
-//{
-//    if(CookieUtil.getVal(cookies,name).equals(name))
-//    {
-//        if(CookieUtil.getVal(cookies,name).equals("langs"))
-//        return out;
-//    }
-//    else
-//        return "";
-//}
+
 %>
 <!DOCTYPE html>
 <html lang="ru">
@@ -128,7 +128,7 @@
 </body>
 </html>
 <%
-    if(request.getParameter("status")!=null && request.getParameter("status").equals("error"))
+    if(!errors_cook.equals(""))
     {
         CookieUtil.delCook(cookies, "fio", response);
         CookieUtil.delCook(cookies, "phone", response);
@@ -136,8 +136,7 @@
         CookieUtil.delCook(cookies, "dob", response);
         CookieUtil.delCook(cookies, "gender", response);
         CookieUtil.delCook(cookies, "bio", response);
-        if(langs!=null)
-            for(String i: langs)
-                CookieUtil.delCook(cookies, i, response);
+        CookieUtil.delCook(cookies, "langs", response);
+        CookieUtil.delCook(cookies, "errors", response);
     }
 %>

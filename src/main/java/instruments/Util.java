@@ -9,6 +9,8 @@ import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class Util {
@@ -49,6 +51,7 @@ public class Util {
                 {
                     k.setValue("");
                     k.setMaxAge(0);
+                    k.setPath("/");
                     response.addCookie(k);
                     break;
                 }
@@ -61,6 +64,7 @@ public class Util {
             try{
                 Cookie cook = new Cookie(name,URLEncoder.encode(val, "UTF-8"));
                 cook.setMaxAge(time);
+                cook.setPath("/");
                 response.addCookie(cook);
             }
             catch (UnsupportedEncodingException e) 

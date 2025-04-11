@@ -1,6 +1,7 @@
 <%@page import="java.util.logging.Logger"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="instruments.Util.CookieUtil"%>
+<%@ page session="false" %>
 <%
     Cookie[] cookies = request.getCookies();
     boolean[] errors = new boolean[4];

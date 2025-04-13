@@ -40,6 +40,7 @@ public class LoginHandler extends HttpServlet {
             if(user.getLogin().equals(login) && user.getHash("PBKDF2WithHmacSHA512").equals(pass))
             {
                 pw.println("good");
+                pw.println(user.getHash("PBKDF2WithHmacSHA512"));
             }
             else
             {

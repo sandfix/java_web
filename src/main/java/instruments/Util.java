@@ -1,4 +1,5 @@
 package instruments;
+import authorization.User;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
@@ -8,9 +9,9 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Set;
+import java.sql.Statement;
 import java.util.logging.Logger;
 
 public class Util {
@@ -109,16 +110,34 @@ public class Util {
             return DriverManager.getConnection(URL, USER, PASSWORD);
         }
         
-        public static void insertUser(Connection conn, String fio, String phone, String email, String dob, String gender, String bio) throws SQLException
+        public static long insertUser(Connection conn, String fio, String phone, String email, String dob, String gender, String bio) throws SQLException
         {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO users(fio,phone,email,dob,gender,bio) VALUES(?,?,?,?,?,?)");
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO users(fio,phone,email,dob,gender,bio) VALUES(?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, fio);
             stmt.setString(2, phone);
             stmt.setString(3, email);
             stmt.setDate(4,Date.valueOf(dob));
             stmt.setString(5, gender);
             stmt.setString(6, bio);
-            stmt.executeUpdate();
+            int affected_rows = stmt.executeUpdate();
+            if(affected_rows>0)
+            {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) 
+                {
+                    if (generatedKeys.next())
+                    {
+                        long generatedId = generatedKeys.getLong(1);
+                        return generatedId;
+                    }
+                    else
+                        return -1;
+                }
+                catch(Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+            return -1;
         }
         
         public static void insertFavLangs(Connection conn, String fio, String[] languages) throws SQLException
@@ -133,6 +152,16 @@ public class Util {
                 stmt2.setString(2,fio);
                 stmt2.executeUpdate();
             }
+        }
+        
+        public static void insertAuth(Connection conn, User user, long id) throws SQLException
+        {
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO auth(user_id, login, password, hash_algorithm) VALUES(?,?,?,?)");
+            stmt.setLong(1, id);
+            stmt.setString(2, user.getLogin());
+            stmt.setString(3, user.getHash("PBKDF2WithHmacSHA512"));
+            stmt.setString(4,"PBKDF2WithHmacSHA512");
+            stmt.executeUpdate();
         }
         
     }

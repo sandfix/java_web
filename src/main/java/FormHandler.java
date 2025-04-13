@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
 
 @WebServlet("/main_page")
 public class FormHandler extends HttpServlet {
@@ -64,15 +65,20 @@ public class FormHandler extends HttpServlet {
         }
 
         if(correctInfo){
-//            try (Connection conn = DButil.getConnection()){
-//                    writer.println("All good");
-//                    DButil.insertUser(conn,fio,phone,email,dob,gender,bio);
-//                    DButil.insertFavLangs(conn,fio,languages);
-//                }
-//            catch(Exception ex){
-//                writer.println("Connection failed...");
-//                writer.println(ex);
-//            }
+            User user = new User();
+            HttpSession session = request.getSession();
+            
+            try (Connection conn = DButil.getConnection()){
+                    writer.println("All good");
+                    long id = DButil.insertUser(conn,fio,phone,email,dob,gender,bio);
+                    DButil.insertFavLangs(conn,fio,languages);
+                    DButil.insertAuth(conn, user, id);
+                    session.setAttribute("user_id", id);
+                }
+            catch(Exception ex){
+                writer.println("Connection failed...");
+                writer.println(ex);
+            }
             CookieUtil.addCook("fio",fio,365*24*60*60,response);
             CookieUtil.addCook("phone",phone,365*24*60*60,response);
             CookieUtil.addCook("email",email,365*24*60*60,response);
@@ -80,13 +86,6 @@ public class FormHandler extends HttpServlet {
             CookieUtil.addCook("gender",gender,365*24*60*60,response);
             CookieUtil.addCook("bio",bio,365*24*60*60,response);
             CookieUtil.addCook("langs",langs,365*24*60*60,response);
-            
-            User user = new User();
-            writer.println(user.getLogin());
-            writer.println(user.getPassword());
-            HttpSession session = request.getSession();
-            session.setAttribute("user", user);
-            
             writer.close();
         }
         else{

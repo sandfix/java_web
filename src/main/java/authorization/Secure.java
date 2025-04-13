@@ -19,6 +19,7 @@ public class Secure {
     }
     
     public static String hashPassword(String password, byte[] salt, int iterations, int key_length, String algorithm) throws Exception{
+        
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterations, key_length);
         SecretKeyFactory factory = SecretKeyFactory.getInstance(algorithm);
         byte[] hash = factory.generateSecret(spec).getEncoded();

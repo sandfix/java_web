@@ -58,7 +58,6 @@ public class LoginHandler extends HttpServlet {
                 
                 if(authCheck(password, db_password_hash, salt, hash_algo))
                 {
-
                     session.setAttribute("user_id",id);
                     session.setAttribute("user_fio", fio);
                 }

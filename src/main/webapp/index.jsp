@@ -3,8 +3,14 @@
 <%@page import="instruments.Util.CookieUtil"%>
 <%@ page session="false" %>
 <%
+    HttpSession my_session = request.getSession(false);
+    
     Cookie[] cookies = request.getCookies();
     boolean[] errors = new boolean[4];
+    Integer user_id = null;
+    if(my_session!=null){
+        user_id = (Integer)my_session.getAttribute("user_id");
+    }
     String[] langs = {"Pascal","C","C++","JavaScript","PHP","Python","Java","Haskell","Clojure","Prolog","Scala","Go"};
     String[] check = new String[langs.length];
     String langs_cook = CookieUtil.getVal(cookies,"langs");
@@ -25,9 +31,6 @@
     for(boolean b : errors)
         System.out.println(b);
 %>
-<%!
-
-%>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -37,6 +40,7 @@
 </head>
 <body>
     <div class="main">
+        <%if(user_id==null){%>
         <div class="login_form_div">
             <form class="login_form" action="login" method="post">
                 <span style="text-align: center; font-size: medium; padding-bottom: 5px; font-weight: bold;">Авторизация</span>
@@ -45,6 +49,18 @@
                 <button type="submit">Войти</button>
             </form>
         </div>
+        <%}%>
+        
+        <%if(user_id!=null){%>
+        <div class="login_form_div">
+            <form class="login_form" action="logout" method="post">
+                <span style="text-align: center; font-size: medium; padding-bottom: 5px; font-weight: bold;"><%= my_session.getAttribute("user_fio") %></span>
+                <a href="/web_proj/edit.jsp" style="display: block; margin-bottom: 10px; text-align: center;">отредактировать данные</a>
+                <button type="submit">Выйти</button>
+            </form>
+        </div>
+        <%}%>
+        
         <div class="center_elem">
             <h1 style="text-align: center;">Форма регистрации</h1>
             <form class="main_form" action="main_page" method="post">
@@ -99,18 +115,6 @@
                 <!-- Любимый язык программирования -->
                 <label for="languages">Любимый язык программирования:</label>
                 <select id="languages" name="languages" multiple size="7">
-                   <%-- <option name="Pascal" value="1" <%= !CookieUtil.getVal(cookies,"Pascal").equals("") ? "selected" : "" %>>Pascal</option>
-                    <option name="C" value="2" <%= !CookieUtil.getVal(cookies,"C").equals("") ? "selected" : "" %>>C</option>
-                    <option name="C++" value="3" <%= !CookieUtil.getVal(cookies,"C++").equals("") ? "selected" : "" %>>C++</option>
-                    <option name="JavaScript"value="4"  <%= !CookieUtil.getVal(cookies,"JavaScript").equals("") ? "selected" : "" %>>JavaScript</option>
-                    <option name="PHP" value="5" <%= !CookieUtil.getVal(cookies,"PHP").equals("") ? "selected" : "" %>>PHP</option>
-                    <option name="Python" value="6" <%= !CookieUtil.getVal(cookies,"Python").equals("") ? "selected" : "" %>>Python</option>
-                    <option name="Java" value="7" <%= !CookieUtil.getVal(cookies,"Java").equals("") ? "selected" : "" %>>Java</option>
-                    <option name="Haskell" value="8" <%= !CookieUtil.getVal(cookies,"Haskell").equals("") ? "selected" : "" %>>Haskell</option>
-                    <option name="Clojure" value="9" <%= !CookieUtil.getVal(cookies,"Clojure").equals("") ? "selected" : "" %>>Clojure</option>
-                    <option name="Prolog" value="10" <%= !CookieUtil.getVal(cookies,"Prolog").equals("") ? "selected" : "" %>>Prolog</option>
-                    <option name="Scala" value="11" <%= !CookieUtil.getVal(cookies,"Scala").equals("") ? "selected" : "" %>>Scala</option>
-                    <option name="Go" value="12" <%= !CookieUtil.getVal(cookies,"Go").equals("") ? "selected" : "" %>>Go</option> --%>
                     <%
                     for(int i=0;i<langs.length;i++)
                     {

@@ -52,7 +52,6 @@ public class Util {
                 {
                     k.setValue("");
                     k.setMaxAge(0);
-                    k.setPath("/");
                     response.addCookie(k);
                     break;
                 }
@@ -156,12 +155,29 @@ public class Util {
         
         public static void insertAuth(Connection conn, User user, long id) throws SQLException
         {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO auth(user_id, login, password, hash_algorithm) VALUES(?,?,?,?)");
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO auth(user_id, login, password, hash_algorithm, salt) VALUES(?,?,?,?,?)");
             stmt.setLong(1, id);
             stmt.setString(2, user.getLogin());
             stmt.setString(3, user.getHash("PBKDF2WithHmacSHA512"));
             stmt.setString(4,"PBKDF2WithHmacSHA512");
+            stmt.setBytes(5, user.getSalt());
             stmt.executeUpdate();
+        }
+        
+        public static ResultSet getAuthInfo(Connection conn, String login) throws SQLException{
+            PreparedStatement stmt = conn.prepareStatement("SELECT user_id, password, hash_algorithm, salt FROM auth "
+                                                            + "WHERE login=?");
+            stmt.setString(1, login);
+            return stmt.executeQuery();
+        }
+        
+        public static String getFio(Connection conn, int id) throws SQLException{
+            PreparedStatement stmt = conn.prepareStatement("SELECT fio FROM users "
+                                                            + "WHERE id=?");
+            stmt.setInt(1, id);
+            ResultSet res = stmt.executeQuery();
+            res.next();
+            return res.getString("fio");
         }
         
     }

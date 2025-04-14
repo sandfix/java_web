@@ -5,6 +5,8 @@
 
 import authorization.Secure;
 import authorization.User;
+import instruments.Util;
+import instruments.Util.DButil;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,6 +15,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.sql.Connection;
+import java.sql.ResultSet;
+
 
 /**
  *
@@ -20,39 +25,53 @@ import jakarta.servlet.http.HttpSession;
  */
 @WebServlet("/login")
 public class LoginHandler extends HttpServlet {
-
+    
+    private boolean authCheck(String pass1, String pass2_hash, byte[] salt, String algorithm)
+    {
+        try {
+            String pass1_hash = Secure.hashPassword(pass1, salt, algorithm);
+            if(pass1_hash.equals(pass2_hash))
+                return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+    
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         PrintWriter pw = response.getWriter();
+        HttpSession session = request.getSession();
+        
         String login = request.getParameter("login");
         String password = request.getParameter("password");
-        HttpSession session = request.getSession();
-        User user = (User)session.getAttribute("user");
-        if(user==null)
+        try (Connection conn = Util.DButil.getConnection())
         {
-            pw.println("null");
-            pw.close();
+            ResultSet rs = DButil.getAuthInfo(conn, login);
+            if(rs.next())
+            {
+                int id = rs.getInt("user_id");
+                String db_password_hash = rs.getString("password");
+                String hash_algo = rs.getString("hash_algorithm");
+                byte[] salt = rs.getBytes("salt");
+                String fio = DButil.getFio(conn, id);
+                
+                if(authCheck(password, db_password_hash, salt, hash_algo))
+                {
+
+                    session.setAttribute("user_id",id);
+                    session.setAttribute("user_fio", fio);
+                }
+            }
+            pw.println("wrong pass or user");
         }
-        else
+        catch(Exception ex)
         {
-            try{
-            String pass = Secure.hashPassword(password,user.getSalt(),65536,256,"PBKDF2WithHmacSHA512");
-            if(user.getLogin().equals(login) && user.getHash("PBKDF2WithHmacSHA512").equals(pass))
-            {
-                pw.println("good");
-                pw.println(user.getHash("PBKDF2WithHmacSHA512"));
-            }
-            else
-            {
-                pw.println("incorrect");
-            }
-            }
-            catch(Exception e){
-                e.printStackTrace();
-            }
-            finally{
-                pw.close();
-            }
+            ex.printStackTrace();
+        }
+        finally{
+            String responseLink = "/web_proj/index.jsp";
+            response.sendRedirect(responseLink);
         }
     }
 }

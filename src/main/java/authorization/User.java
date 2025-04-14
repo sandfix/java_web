@@ -25,7 +25,7 @@ public class User {
     }
     public String getHash(String algorithm){
         try{
-            return hashPassword(password,salt,65536,256,algorithm);
+            return hashPassword(password, salt, algorithm);
         }
         catch(Exception e){
             System.out.println(e.fillInStackTrace());

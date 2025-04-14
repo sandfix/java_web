@@ -10,6 +10,9 @@ import javax.crypto.spec.PBEKeySpec;
 
 public class Secure {
     
+    private static final int ITERATIONS = 65536;
+    private static final int KEY_LENGTH = 256;
+    
     public static byte[] getSalt()
     {
         byte[] salt = new byte[16];
@@ -18,9 +21,9 @@ public class Secure {
         return salt;
     }
     
-    public static String hashPassword(String password, byte[] salt, int iterations, int key_length, String algorithm) throws Exception{
+    public static String hashPassword(String password, byte[] salt, String algorithm) throws Exception{
         
-        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterations, key_length);
+        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITERATIONS, KEY_LENGTH);
         SecretKeyFactory factory = SecretKeyFactory.getInstance(algorithm);
         byte[] hash = factory.generateSecret(spec).getEncoded();
         

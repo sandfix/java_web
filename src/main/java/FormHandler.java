@@ -1,15 +1,11 @@
 
 import authorization.User;
 import instruments.Util.*;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -66,14 +62,14 @@ public class FormHandler extends HttpServlet {
 
         if(correctInfo){
             User user = new User();
-            HttpSession session = request.getSession();
+            
+            writer.println(user.getLogin());
+            writer.println(user.getPassword());
             
             try (Connection conn = DButil.getConnection()){
-                    writer.println("All good");
                     long id = DButil.insertUser(conn,fio,phone,email,dob,gender,bio);
                     DButil.insertFavLangs(conn,fio,languages);
                     DButil.insertAuth(conn, user, id);
-                    session.setAttribute("user_id", id);
                 }
             catch(Exception ex){
                 writer.println("Connection failed...");

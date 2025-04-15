@@ -51,8 +51,10 @@ public class Util {
             for(Cookie k: mas){
                 if(k.getName().equals(name))
                 {
+                    System.out.println("Cookies " + k.getName() + " deleted");
                     k.setValue("");
                     k.setMaxAge(0);
+                    k.setPath("/");
                     response.addCookie(k);
                     break;
                 }
@@ -96,7 +98,7 @@ public class Util {
     public static class DButil{
         private static final String URL = "jdbc:mariadb://localhost:3306/users_info";
         private static final String USER = "root";
-        private static final String PASSWORD = "";
+        private static final String PASSWORD = "omegalul";
         static {
             try {
                 Class.forName("org.mariadb.jdbc.Driver");

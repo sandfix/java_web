@@ -7,6 +7,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="instruments.Util.CookieUtil"%>
 <%@ page session="false" %>
+<%@page buffer="32kb" autoFlush="true" %>
 <%
     HttpSession my_session = request.getSession(false);
     
@@ -121,7 +122,7 @@
                 <!-- Пол -->
                 <div>
                     <label for="gender">Пол:</label>
-                    <input type="radio" id="male" name="gender" value="male" <%= gender.equals("male") ? "checked":"" %>>
+                    <input type="radio" id="male" name="gender" value="male" required <%= gender.equals("male") ? "checked":"" %>>
                     <label for="male">Мужской</label>
                     <input type="radio" id="female" name="gender" value="female" <%= gender.equals("female") ? "checked":"" %>>
                     <label for="female">Женский</label>
@@ -151,8 +152,12 @@
 <%}%>
 </html>
 <%
+    if(response.isCommitted())
+        System.out.println("otvet ushel");
     if(!errors_cook.equals(""))
     {
+        System.out.println("errors deleted");
         CookieUtil.delCook(cookies, "errors", response);
     }
+    
 %>

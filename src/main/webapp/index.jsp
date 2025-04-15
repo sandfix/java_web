@@ -16,12 +16,14 @@
     String langs_cook = CookieUtil.getVal(cookies,"langs");
     String errors_cook = CookieUtil.getVal(cookies,"errors");
     
+    if(langs_cook!=null)
     for(char i : langs_cook.toCharArray())
     {
         if(i!='-')
             check[Character.getNumericValue(i)] = "selected";
     }
     
+    if(errors_cook!=null)
     for(char i : errors_cook.toCharArray())
     {
         if(i!='-')
@@ -105,7 +107,7 @@
                 <!-- Пол -->
                 <div>
                     <label for="gender">Пол:</label>
-                    <input type="radio" id="male" name="gender" value="male" <%= CookieUtil.getVal(cookies,"gender").equals("male") ? "checked":"" %>>
+                    <input type="radio" id="male" name="gender" value="male" required <%= CookieUtil.getVal(cookies,"gender").equals("male") ? "checked":"" %>>
                     <label for="male">Мужской</label>
                     <input type="radio" id="female" name="gender" value="female" <%= CookieUtil.getVal(cookies,"gender").equals("female") ? "checked":"" %>>
                     <label for="female">Женский</label>

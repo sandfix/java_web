@@ -32,13 +32,13 @@ public class FormHandler extends HttpServlet {
         String languages[] = request.getParameterValues("languages");
 
         String langs = "";
-            if(languages!=null)
+        if(languages!=null){
             for(String i: languages)
             {
-                langs+=i+"-";
+                 langs+=i+"-";
             }
-        langs = langs.substring(0,langs.length()-1);
-
+            langs = langs.substring(0,langs.length()-1);
+        }
         if(!fio.matches("[a-zA-Z ]{0,150}"))
         {
             correctInfo=false;

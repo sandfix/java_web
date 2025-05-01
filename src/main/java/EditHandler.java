@@ -30,9 +30,9 @@ public class EditHandler extends HttpServlet {
         String errors = "";
         
         HttpSession my_session = request.getSession(false);
-        Integer user_id=null;
+        Long user_id=null;
         if(my_session!=null){
-        user_id = (Integer)my_session.getAttribute("user_id");
+        user_id = (Long)my_session.getAttribute("user_id");
         }
         
         String fio = request.getParameter("fio");
@@ -75,7 +75,7 @@ public class EditHandler extends HttpServlet {
         if(correctInfo){
             try (Connection conn = Util.DButil.getConnection()){
                     DButil.deleteFavLangs(conn, user_id);
-                    DButil.insertFavLangs(conn, fio, languages);
+                    DButil.insertFavLangs(conn, user_id, languages);
                     DButil.updateUserInfo(conn, user_id, fio, phone, email, dob, gender, bio);
                 }
             catch(Exception ex){
@@ -90,11 +90,9 @@ public class EditHandler extends HttpServlet {
             Util.CookieUtil.addCook("langs",langs,365*24*60*60,response);
         }
         else{
-            
             Util.CookieUtil.addCook("errors",errors,-1,response);
-            String responseLink = "/web_proj/info_change.jsp";
-            response.sendRedirect(responseLink);
         }
-
+        String responseLink = request.getContextPath() + "/info_change.jsp";
+        response.sendRedirect(responseLink);
     }
 }

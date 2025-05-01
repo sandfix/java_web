@@ -50,7 +50,7 @@ public class LoginHandler extends HttpServlet {
             ResultSet rs = DButil.getAuthInfo(conn, login);
             if(rs.next())
             {
-                int id = rs.getInt("user_id");
+                long id = rs.getLong("user_id");
                 String db_password_hash = rs.getString("password");
                 String hash_algo = rs.getString("hash_algorithm");
                 byte[] salt = rs.getBytes("salt");
@@ -69,7 +69,7 @@ public class LoginHandler extends HttpServlet {
             ex.printStackTrace();
         }
         finally{
-            String responseLink = "/web_proj/index.jsp";
+            String responseLink = request.getContextPath() + "/index.jsp";
             response.sendRedirect(responseLink);
         }
     }

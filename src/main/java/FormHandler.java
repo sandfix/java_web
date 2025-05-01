@@ -21,7 +21,6 @@ public class FormHandler extends HttpServlet {
         String errors = "";
 
         response.setContentType("text/html");
-        PrintWriter writer = response.getWriter();
 
         String fio = request.getParameter("fio");
         String phone = request.getParameter("phone");
@@ -63,17 +62,19 @@ public class FormHandler extends HttpServlet {
         if(correctInfo){
             User user = new User();
             
-            writer.println(user.getLogin());
-            writer.println(user.getPassword());
+            CookieUtil.addCook("login", user.getLogin(), -1, response);
+            CookieUtil.addCook("password", user.getPassword(), -1, response);
             
             try (Connection conn = DButil.getConnection()){
                     long id = DButil.insertUser(conn,fio,phone,email,dob,gender,bio);
-                    DButil.insertFavLangs(conn,fio,languages);
+                    DButil.insertFavLangs(conn, id, languages);
                     DButil.insertAuth(conn, user, id);
                 }
             catch(Exception ex){
+                PrintWriter writer = response.getWriter();
                 writer.println("Connection failed...");
                 writer.println(ex);
+                writer.close();
             }
             CookieUtil.addCook("fio",fio,365*24*60*60,response);
             CookieUtil.addCook("phone",phone,365*24*60*60,response);
@@ -82,7 +83,8 @@ public class FormHandler extends HttpServlet {
             CookieUtil.addCook("gender",gender,365*24*60*60,response);
             CookieUtil.addCook("bio",bio,365*24*60*60,response);
             CookieUtil.addCook("langs",langs,365*24*60*60,response);
-            writer.close();
+            String responseLink = request.getContextPath() + "/registration_notice.jsp";
+            response.sendRedirect(responseLink);
         }
         else{
             CookieUtil.addCook("fio",fio,-1,response);
@@ -94,7 +96,7 @@ public class FormHandler extends HttpServlet {
             CookieUtil.addCook("langs",langs,-1,response);
             CookieUtil.addCook("errors",errors,-1,response);
             
-            String responseLink = "/web_proj/index.jsp";
+            String responseLink = request.getContextPath() + "/index.jsp";
             response.sendRedirect(responseLink);
         }
 

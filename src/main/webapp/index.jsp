@@ -7,9 +7,9 @@
     
     Cookie[] cookies = request.getCookies();
     boolean[] errors = new boolean[4];
-    Integer user_id = null;
+    Long user_id = null;
     if(my_session!=null){
-        user_id = (Integer)my_session.getAttribute("user_id");
+        user_id = (Long)my_session.getAttribute("user_id");
     }
     String[] langs = {"Pascal","C","C++","JavaScript","PHP","Python","Java","Haskell","Clojure","Prolog","Scala","Go"};
     String[] check = new String[langs.length];
@@ -55,7 +55,7 @@
         <div class="login_form_div">
             <form class="login_form" action="logout" method="post">
                 <span style="text-align: center; font-size: medium; padding-bottom: 5px; font-weight: bold;"><%= my_session.getAttribute("user_fio") %></span>
-                <a href="/web_proj/info_change.jsp" style="display: block; margin-bottom: 10px; text-align: center;">отредактировать данные</a>
+                <a href="${pageContext.request.contextPath}/info_change.jsp" style="display: block; margin-bottom: 10px; text-align: center;">отредактировать данные</a>
                 <button type="submit">Выйти</button>
             </form>
         </div>

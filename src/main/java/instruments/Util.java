@@ -142,21 +142,21 @@ public class Util {
             return -1;
         }
         
-        public static void insertFavLangs(Connection conn, String fio, String[] num_languages) throws SQLException
+        public static void insertFavLangs(Connection conn, Long id, String[] num_languages) throws SQLException
         {
             PreparedStatement stmt2 = conn.prepareStatement("INSERT INTO fav_langs(user_id,lang_id)\n" +
                                                                     "SELECT u.id, l.id FROM\n" +
                                                                     "users u JOIN langs l ON l.name=?\n" +
-                                                                    "WHERE u.fio=?");
+                                                                    "WHERE u.id=?");
             if(num_languages!=null)
             for(String num_lang: num_languages){
                 stmt2.setString(1,ALL_LANGS[Integer.parseInt(num_lang)]);
-                stmt2.setString(2,fio);
+                stmt2.setLong(2,id);
                 stmt2.executeUpdate();
             }
         }
         
-        public static void insertAuth(Connection conn, User user, long id) throws SQLException
+        public static void insertAuth(Connection conn, User user, Long id) throws SQLException
         {
             PreparedStatement stmt = conn.prepareStatement("INSERT INTO auth(user_id, login, password, hash_algorithm, salt) VALUES(?,?,?,?,?)");
             stmt.setLong(1, id);
@@ -174,36 +174,36 @@ public class Util {
             return stmt.executeQuery();
         }
         
-        public static String getFio(Connection conn, int id) throws SQLException{
+        public static String getFio(Connection conn, Long id) throws SQLException{
             PreparedStatement stmt = conn.prepareStatement("SELECT fio FROM users "
                                                             + "WHERE id=?");
-            stmt.setInt(1, id);
+            stmt.setLong(1, id);
             ResultSet res = stmt.executeQuery();
             res.next();
             return res.getString("fio");
         }
         
-        public static ResultSet getUserInfo(Connection conn, int id) throws SQLException{
+        public static ResultSet getUserInfo(Connection conn, Long id) throws SQLException{
             PreparedStatement stmt = conn.prepareStatement("select fio, phone, email, dob, gender, bio from users " +
                                                             "where id = ?");
-            stmt.setInt(1, id);
+            stmt.setLong(1, id);
             return stmt.executeQuery();
         }
         
-        public static ResultSet getLangsNums(Connection conn, int id) throws SQLException{
+        public static ResultSet getLangsNums(Connection conn, Long id) throws SQLException{
             PreparedStatement stmt = conn.prepareStatement("select lang_id from fav_langs " +
                                                             "where user_id = ?");
-            stmt.setInt(1, id);
+            stmt.setLong(1, id);
             return stmt.executeQuery();
         }
         
-        public static void deleteFavLangs(Connection conn, int id) throws SQLException{
+        public static void deleteFavLangs(Connection conn, Long id) throws SQLException{
             PreparedStatement stmt = conn.prepareStatement("delete from fav_langs where user_id=?");
-            stmt.setInt(1, id);
+            stmt.setLong(1, id);
             stmt.executeQuery();
         }
         
-        public static void updateUserInfo(Connection conn, Integer id, String fio, String phone, String email, String dob, String gender, String bio) throws SQLException{
+        public static void updateUserInfo(Connection conn, Long id, String fio, String phone, String email, String dob, String gender, String bio) throws SQLException{
             if(id==null)
                 return;
             PreparedStatement stmt = conn.prepareStatement("update users set fio=?, phone=?, email=?, dob=?, gender=?, bio=? where id=?");
@@ -213,7 +213,7 @@ public class Util {
             stmt.setDate(4,Date.valueOf(dob));
             stmt.setString(5, gender);
             stmt.setString(6, bio);
-            stmt.setInt(7, id);
+            stmt.setLong(7, id);
             stmt.executeQuery();
         }
         

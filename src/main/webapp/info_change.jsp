@@ -20,7 +20,7 @@
     
     Cookie[] cookies = request.getCookies();
     boolean[] errors = new boolean[4];
-    Integer user_id = null;
+    Long user_id = null;
     String[] langs = {"Pascal","C","C++","JavaScript","PHP","Python","Java","Haskell","Clojure","Prolog","Scala","Go"};
     String[] check = new String[langs.length];
     String errors_cook = CookieUtil.getVal(cookies,"errors");
@@ -28,7 +28,7 @@
     Arrays.fill(check,"");
     
     if(my_session!=null){
-        user_id = (Integer)my_session.getAttribute("user_id");
+        user_id = (Long)my_session.getAttribute("user_id");
     }
     
     
@@ -76,6 +76,12 @@
 <% }else{ %>
 <body>
     <div class="main">
+        <div class="login_form_div">
+            <form class="login_form" action="index.jsp" method="get">
+                <span style="text-align: center; font-size: medium; padding-bottom: 5px; font-weight: bold;"><%= my_session.getAttribute("user_fio") %></span>
+                <button type="submit">Вернуться к форме</button>
+            </form>
+        </div>
         <div class="center_elem">
             <h1 style="text-align: center;">Изменение данных</h1>
             <form class="main_form" action="edit" method="post">

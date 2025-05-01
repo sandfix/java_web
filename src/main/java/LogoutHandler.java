@@ -30,6 +30,7 @@ public class LogoutHandler extends HttpServlet {
         }
         Cookie[] mas = request.getCookies();
         CookieUtil.delCook(mas, "JSESSIONID", response);
-        response.sendRedirect("/web_proj/index.jsp");
+        String responseLink = request.getContextPath() + "/index.jsp";
+        response.sendRedirect(responseLink);
     }
 }

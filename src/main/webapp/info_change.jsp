@@ -39,6 +39,11 @@
     }
     
         //////
+    boolean editFlag = false;
+    if(!CookieUtil.getVal(cookies,"editID").equals("")){
+        user_id=Long.parseLong(CookieUtil.getVal(cookies,"editID"));
+        editFlag = true;
+    }
     if(user_id!=null)
     {
         try (Connection conn = DButil.getConnection()){
@@ -76,12 +81,21 @@
 <% }else{ %>
 <body>
     <div class="main">
+        <%if(editFlag==false){%>
         <div class="login_form_div">
-            <form class="login_form" action="index.jsp" method="get">
+            <form class="login_form" action="index.jsp" method="post">
                 <span style="text-align: center; font-size: medium; padding-bottom: 5px; font-weight: bold;"><%= my_session.getAttribute("user_fio") %></span>
                 <button type="submit">Вернуться к форме</button>
             </form>
         </div>
+        <%}%>
+        <%if(editFlag==true){%>
+        <div class="login_form_div">
+            <form class="login_form" action="index.jsp" method="post">
+                <a href="protected/admin_panel.jsp" style="display: block; margin-bottom: 10px; text-align: center;">отредактировать данные</a>
+            </form>
+        </div>
+        <%}%>   
         <div class="center_elem">
             <h1 style="text-align: center;">Изменение данных</h1>
             <form class="main_form" action="edit" method="post">
@@ -158,8 +172,6 @@
 <%}%>
 </html>
 <%
-    if(response.isCommitted())
-        System.out.println("otvet ushel");
     if(!errors_cook.equals(""))
     {
         System.out.println("errors deleted");

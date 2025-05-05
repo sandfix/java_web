@@ -152,4 +152,5 @@
         CookieUtil.delCook(cookies, "langs", response);
         CookieUtil.delCook(cookies, "errors", response);
     }
+    CookieUtil.delCook(cookies, "editID", response);
 %>

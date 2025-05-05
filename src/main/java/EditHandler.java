@@ -5,11 +5,13 @@
 
 import authorization.User;
 import instruments.Util;
+import instruments.Util.CookieUtil;
 import instruments.Util.DButil;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -34,6 +36,9 @@ public class EditHandler extends HttpServlet {
         if(my_session!=null){
         user_id = (Long)my_session.getAttribute("user_id");
         }
+        Cookie[] cookies = request.getCookies();
+        if(!CookieUtil.getVal(cookies,"editID").equals(""))
+            user_id=Long.parseLong(CookieUtil.getVal(cookies,"editID"));
         
         String fio = request.getParameter("fio");
         String phone = request.getParameter("phone");

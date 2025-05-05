@@ -19,9 +19,9 @@ public class FormHandler extends HttpServlet {
         String[] all_langs = {"Pascal","C","C++","JavaScript","PHP","Python","Java","Haskell","Clojure","Prolog","Scala","Go"};
         boolean correctInfo = true;
         String errors = "";
-
+        
         response.setContentType("text/html");
-
+        
         String fio = request.getParameter("fio");
         String phone = request.getParameter("phone");
         String email = request.getParameter("email");

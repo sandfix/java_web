@@ -217,5 +217,26 @@ public class Util {
             stmt.executeQuery();
         }
         
+        public static ResultSet GetBestLangs(Connection conn) throws SQLException{
+            PreparedStatement stmt = conn.prepareStatement("select name, count(user_id) kol from\n " +
+                                                            "fav_langs join langs on id = lang_id\n " +
+                                                            "group by name\n " +
+                                                            "order by count(user_id) desc");
+            return stmt.executeQuery();
+        }
+        
+        public static ResultSet GetUsers(Connection conn) throws SQLException{
+            PreparedStatement stmt = conn.prepareStatement("select id,fio,phone,email,dob,gender from users order by id");
+            return stmt.executeQuery();
+        }
+        
+        public static void deleteUser(Connection conn, Long id) throws SQLException{
+            if(id==null)
+                return;
+            PreparedStatement stmt = conn.prepareStatement("delete from users where id=? ");
+            stmt.setLong(1, id);
+            stmt.executeQuery();
+        }
+        
     }
 }
